@@ -1,3 +1,3 @@
 # 2026-Rebuilt
 
-Foxwizarding - Alexander/Alex
+[Foxwizarding](https://github.com/Foxwizarding) - Alexander/Alex
