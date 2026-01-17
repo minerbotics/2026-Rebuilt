@@ -3,4 +3,4 @@
 ## Contributing Team Members
 
 [Foxwizarding](https://github.com/Foxwizarding) - Alexander/Alex  
-Becapa - Coach Michael
+[Becapa](https://github.com/becapa) - Coach Michael
