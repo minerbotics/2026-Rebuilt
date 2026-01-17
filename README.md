@@ -4,4 +4,3 @@
 
 [Foxwizarding](https://github.com/Foxwizarding) - Alexander/Alex  
 Becapa - Coach Michael
-
