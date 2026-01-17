@@ -1,3 +1,5 @@
 # 2026-Rebuilt
 
-[Foxwizarding](https://github.com/Foxwizarding) - Alexander/Alex
+## Contributing Team Members
+Foxwizarding - Alexander/Alex
+Becapa - Coach Michael
