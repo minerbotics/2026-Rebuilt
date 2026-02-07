@@ -5,4 +5,5 @@ class FuelConstants:
     _launcher_current_limit = 60
 
 class OperatorConstants:
-    _
+    _driver_controller = 0
+    _operator_controller = 1
