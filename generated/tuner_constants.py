@@ -89,8 +89,8 @@ class TunerConstants:
     _steer_gear_ratio = 26.09090909090909
     _wheel_radius: units.meter = inchesToMeters(2)
 
-    _invert_left_side = True
-    _invert_right_side = False
+    _invert_left_side = False
+    _invert_right_side = True
 
     _pigeon_id = 30
 
@@ -141,7 +141,7 @@ class TunerConstants:
     _front_left_drive_motor_id = 1
     _front_left_steer_motor_id = 2
     _front_left_encoder_id = 20
-    _front_left_encoder_offset: units.rotation = -0.3427734375
+    _front_left_encoder_offset: units.rotation = 0.0380859375
     _front_left_steer_motor_inverted = False
     _front_left_encoder_inverted = False
 
@@ -152,7 +152,7 @@ class TunerConstants:
     _front_right_drive_motor_id = 3
     _front_right_steer_motor_id = 4
     _front_right_encoder_id = 21
-    _front_right_encoder_offset: units.rotation = 0.3349609375
+    _front_right_encoder_offset: units.rotation = 0.3359375
     _front_right_steer_motor_inverted = False
     _front_right_encoder_inverted = False
 
@@ -163,7 +163,7 @@ class TunerConstants:
     _back_left_drive_motor_id = 5
     _back_left_steer_motor_id = 6
     _back_left_encoder_id = 22
-    _back_left_encoder_offset: units.rotation = -0.23486328125
+    _back_left_encoder_offset: units.rotation = 0.150634765625
     _back_left_steer_motor_inverted = False
     _back_left_encoder_inverted = False
 
@@ -174,7 +174,7 @@ class TunerConstants:
     _back_right_drive_motor_id = 7
     _back_right_steer_motor_id = 8
     _back_right_encoder_id = 23
-    _back_right_encoder_offset: units.rotation = -0.05810546875
+    _back_right_encoder_offset: units.rotation = 0.291748046875
     _back_right_steer_motor_inverted = False
     _back_right_encoder_inverted = False
 
@@ -322,11 +322,11 @@ class TunerSwerveDrivetrain(
                                             CAN FD, and 100 Hz on CAN 2.0.
         :type odometry_update_frequency:    units.hertz
         :param odometry_standard_deviation: The standard deviation for odometry calculation
-                                            in the form [x, y, theta]ᵀ, with units in meters
+                                            in the form [x, y, theta]áµ€, with units in meters
                                             and radians
         :type odometry_standard_deviation:  tuple[float, float, float]
         :param vision_standard_deviation:   The standard deviation for vision calculation
-                                            in the form [x, y, theta]ᵀ, with units in meters
+                                            in the form [x, y, theta]áµ€, with units in meters
                                             and radians
         :type vision_standard_deviation:    tuple[float, float, float]
         :param modules:                     Constants for each specific module
@@ -363,4 +363,4 @@ class TunerSwerveDrivetrain(
             arg1,
             arg2,
             arg3,
-        )
+        )
