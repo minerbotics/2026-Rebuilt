@@ -13,8 +13,8 @@ class FuelSubsystem(commands2.Subsystem):
         feederConfig = phoenix6.configs.TalonFXConfiguration()
 
     def intake(self) -> None:
-        self.feederRoller.setVoltage(FuelConstants._feeder_voltage)
-        self.intakeLauncherRoller.setVoltage(FuelConstants._launcher_voltage)
+        self.feederRoller.set(0.1)
+        self.intakeLauncherRoller.set(0.1)
 
     def stop(self) -> None:
         self.feederRoller.set(0)
