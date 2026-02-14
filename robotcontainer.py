@@ -18,6 +18,8 @@ from wpilib import DriverStation
 from wpimath.geometry import Rotation2d
 from wpimath.units import rotationsToRadians
 
+from subsystems.fuel_subsystem import FuelSubsystem
+
 
 class RobotContainer:
     """
@@ -51,8 +53,10 @@ class RobotContainer:
 
         self._logger = Telemetry(self._max_speed)
 
-        self._driver = CommandXboxController(constants.OperatorConstant._driver_controller)
-        self._operator = CommandXboxController(constants.OperatorConstant._operator_controller)
+        self._ball_subsystem = FuelSubsystem()
+
+        self._driver = CommandXboxController(constants.OperatorConstants._driver_controller)
+        self._operator = CommandXboxController(constants.OperatorConstants._operator_controller)
 
         self.drivetrain = TunerConstants.create_drivetrain()
 
@@ -65,6 +69,12 @@ class RobotContainer:
         instantiating a :GenericHID or one of its subclasses (Joystick or XboxController),
         and then passing it to a JoystickButton.
         """
+
+        self._operator.leftBumper().whileTrue(
+            self._ball_subsystem.runEnd(
+                self._ball_subsystem.intake, self._ball_subsystem.stop
+            )
+        )
 
         # Note that X is defined as forward according to WPILib convention,
         # and Y is defined as to the left according to WPILib convention.
