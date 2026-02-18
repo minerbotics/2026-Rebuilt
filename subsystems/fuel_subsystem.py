@@ -10,7 +10,10 @@ class FuelSubsystem(commands2.Subsystem):
 
         self.intakeLauncherRoller = phoenix6.hardware.TalonFX(FuelConstants._launcher_id)
         self.feederRoller = phoenix6.hardware.TalonFX(FuelConstants._feeder_id)
-        feederConfig = phoenix6.configs.TalonFXConfiguration()
+        motorConfig = phoenix6.configs.TalonFXConfiguration()
+        motorConfig.Commutation.MotorArrangement = phoenix6.signals.MotorArrangementValue.Minion_JST
+        self.intakeLauncherRoller.getConfiguration().apply(motorConfig)
+        self.feederRoller.getConfiguration().apply(motorConfig)
 
     def intake(self) -> None:
         self.feederRoller.set(0.1)
