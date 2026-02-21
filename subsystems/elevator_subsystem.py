@@ -4,7 +4,7 @@ import phoenix6
 
 from constants import ElevatorConstants
 
-class ElevatorSubsystam(commands2.Subsystem):
+class ElevatorSubsystem(commands2.Subsystem):
     def __init__(self) -> None:
         super().__init__()
 

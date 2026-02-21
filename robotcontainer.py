@@ -19,6 +19,7 @@ from wpimath.geometry import Rotation2d
 from wpimath.units import rotationsToRadians
 
 from subsystems.fuel_subsystem import FuelSubsystem
+from subsystems.elevator_subsystem import ElevatorSubsystem
 
 
 class RobotContainer:
@@ -55,6 +56,8 @@ class RobotContainer:
 
         self._ball_subsystem = FuelSubsystem()
 
+        self._climb_subsystem = ElevatorSubsystem()
+
         self._driver = CommandXboxController(constants.OperatorConstants._driver_controller)
         self._operator = CommandXboxController(constants.OperatorConstants._operator_controller)
 
@@ -83,8 +86,20 @@ class RobotContainer:
             .finallyDo(lambda _: self._ball_subsystem.stop())
         )
 
-        self._operator.a().whileTrue(
+        self._operator.b().whileTrue(
             self._ball_subsystem.runEnd(self._ball_subsystem.eject, self._ball_subsystem.stop)
+        )
+
+        self._operator.y().whileTrue(
+            self._climb_subsystem.runEnd(
+                self._climb_subsystem.lift, self._climb_subsystem.stop
+            )
+        )
+
+        slef._operator.a().whileTrue(
+            slef._climb_subsystem.runEnd(
+                self._climb_subsystem.lower, self._climb_subsystem.stop
+            )
         )
 
         # Note that X is defined as forward according to WPILib convention,
