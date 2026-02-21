@@ -80,7 +80,7 @@ class RobotContainer:
             self._ball_subsystem.spinUpCommand()
             .withTimeout(1.0)
             .andThen(self._ball_subsystem.launchCommand())
-            .finalldo(lambda _: self._ball_subsystem.stop())
+            .finallyDo(lambda _: self._ball_subsystem.stop())
         )
 
         self._operator.a().whileTrue(
