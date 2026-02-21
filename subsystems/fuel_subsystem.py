@@ -18,8 +18,8 @@ class FuelSubsystem(commands2.Subsystem):
         feeder_configurator.apply(self.arrangementConfig)
 
     def intake(self) -> None:
-        self.feederRoller.set(-0.5)
-        self.launcherRoller.set(-0.3)
+        self.feederRoller.set(-1 * constants._feeder_intake_speed)
+        self.launcherRoller.set(-1 * constants._launcher_intake_speed)
 
     def eject(self) -> None:
         self.feederRoller.set(0.5)
