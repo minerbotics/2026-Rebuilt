@@ -92,13 +92,13 @@ class RobotContainer:
 
         self._operator.y().whileTrue(
             self._climb_subsystem.runEnd(
-                self._climb_subsystem.lift, self._climb_subsystem.stop
+                self._climb_subsystem.up, self._climb_subsystem.stop
             )
         )
 
         self._operator.a().whileTrue(
             self._climb_subsystem.runEnd(
-                self._climb_subsystem.lower, self._climb_subsystem.stop
+                self._climb_subsystem.down, self._climb_subsystem.stop
             )
         )
 

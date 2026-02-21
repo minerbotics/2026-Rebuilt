@@ -14,10 +14,10 @@ class ElevatorSubsystem(commands2.Subsystem):
         elevator_configurator = self.elevator.configurator
         elevator_configurator.apply(self.arrangementConfig)
     
-    def lift(self) -> None:
+    def up(self) -> None:
         self.elevator.set(0.1)
     
-    def lower(self) -> None:
+    def down(self) -> None:
         self.elevator.set(-0.1)
     
     def stop(self) -> None:
