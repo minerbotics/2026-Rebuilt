@@ -96,8 +96,8 @@ class RobotContainer:
             )
         )
 
-        slef._operator.a().whileTrue(
-            slef._climb_subsystem.runEnd(
+        self._operator.a().whileTrue(
+            self._climb_subsystem.runEnd(
                 self._climb_subsystem.lower, self._climb_subsystem.stop
             )
         )
