@@ -76,6 +76,17 @@ class RobotContainer:
             )
         )
 
+        self._operator.rightBumper().whileTrue(
+            self._ball_subsystem.spinUpCommand()
+            .withTimeout(1.0)
+            .andThen(self._ball_subsystem.launchCommand())
+            .finalldo(lambda _: self._ball_subsystem.stop())
+        )
+
+        self._operator.a().whileTrue(
+            self._ball_subsystem.runEnd(self._ball_subsystem.eject, slef._ball_subsystem.stop)
+        )
+
         # Note that X is defined as forward according to WPILib convention,
         # and Y is defined as to the left according to WPILib convention.
         self.drivetrain.setDefaultCommand(
