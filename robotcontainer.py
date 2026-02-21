@@ -84,7 +84,7 @@ class RobotContainer:
         )
 
         self._operator.a().whileTrue(
-            self._ball_subsystem.runEnd(self._ball_subsystem.eject, slef._ball_subsystem.stop)
+            self._ball_subsystem.runEnd(self._ball_subsystem.eject, self._ball_subsystem.stop)
         )
 
         # Note that X is defined as forward according to WPILib convention,

@@ -26,11 +26,11 @@ class FuelSubsystem(commands2.Subsystem):
         self.launcherRoller.set(0.3)
 
     def launch(self) -> None:
-        self.feederRoller.set(-0.3)
+        self.feederRoller.set(0.3)
         self.launcherRoller.set(-0.7)
 
     def spinUp(self) -> None:
-        self.feederRoller.set(-0.25)
+        self.feederRoller.set(0)
         self.launcherRoller.set(-0.7)
 
     def stop(self) -> None:
