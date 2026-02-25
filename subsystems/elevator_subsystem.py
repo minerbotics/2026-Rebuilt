@@ -15,11 +15,11 @@ class ElevatorSubsystem(commands2.Subsystem):
         elevator_configurator.apply(self.arrangementConfig)
     
     def up(self) -> None:
-        self.elevator.set(constants._elevator_speed)
+        self.elevator.set(ElevatorConstants._elevator_speed)
         
     
     def down(self) -> None:
-        self.elevator.set(-1 * constants._elevator_speed)
+        self.elevator.set(-1 * ElevatorConstants._elevator_speed)
     
     def stop(self) -> None:
         self.elevator.set(0)
