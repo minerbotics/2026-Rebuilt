@@ -22,16 +22,16 @@ class FuelSubsystem(commands2.Subsystem):
         self.launcherRoller.set(-1 * constants._launcher_intake_speed)
 
     def eject(self) -> None:
-        self.feederRoller.set(0.5)
-        self.launcherRoller.set(0.3)
+        self.feederRoller.set(constants._feeder_intake_speed)
+        self.launcherRoller.set(constants._launcher_intake_speed)
 
     def launch(self) -> None:
-        self.feederRoller.set(0.3)
-        self.launcherRoller.set(-0.7)
+        self.feederRoller.set(constants._feeder_launch_speed)
+        self.launcherRoller.set(-1 * constants._launcher_launch_speed)
 
     def spinUp(self) -> None:
-        self.feederRoller.set(0)
-        self.launcherRoller.set(-0.7)
+        self.feederRoller.set(constants._feeder_spinup_speed)
+        self.launcherRoller.set(-1 * constants._launcher_launch_speed)
 
     def stop(self) -> None:
         self.feederRoller.set(0)

@@ -9,7 +9,7 @@ class FuelConstants:
     _launcher_intake_speed = 0.3
     _feeder_launch_speed = 0.3
     _launcher_launch_speed = 0.7
-    _feeder_spinup_speed = -0.3
+    _feeder_spinup_speed = 0
 
 class OperatorConstants:
     _driver_controller = 0
