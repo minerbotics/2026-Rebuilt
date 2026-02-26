@@ -7,7 +7,7 @@ class FuelConstants:
     _launcher_voltage = 9.0
     _feeder_intake_speed = 0.5
     _launcher_intake_speed = 0.3
-    _feeder_launch_speed = 0.3
+    _feeder_launch_speed = 1.0
     _launcher_launch_speed = 0.8
     _feeder_spinup_speed = 0
 
