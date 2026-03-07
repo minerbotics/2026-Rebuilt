@@ -6,6 +6,9 @@ from typing import Callable, overload
 from wpilib import DriverStation, Notifier, RobotController
 from wpilib.sysid import SysIdRoutineLog
 from wpimath.geometry import Pose2d, Rotation2d
+from pathplannerlib.auto import AutoBuilder
+from pathplannerlib.controller import PPHolonomicDriveController
+from pathplannerlib.config import RobotConfig, PIDConstants
 
 from generated.tuner_constants import TunerSwerveDrivetrain
 
@@ -25,6 +28,8 @@ class CommandSwerveDrivetrain(Subsystem, TunerSwerveDrivetrain):
     """Blue alliance sees forward as 0 degrees (toward red alliance wall)"""
     _RED_ALLIANCE_PERSPECTIVE_ROTATION = Rotation2d.fromDegrees(180)
     """Red alliance sees forward as 180 degrees (toward blue alliance wall)"""
+
+    path_apply_robot_speeds = swerve.SwerveRequest.ApplyRobotSpeeds()
 
     @overload
     def __init__(
@@ -46,6 +51,7 @@ class CommandSwerveDrivetrain(Subsystem, TunerSwerveDrivetrain):
         :type modules:               list[swerve.SwerveModuleConstants]
         """
         ...
+        self.configureAutoBuilder(self)
 
     @overload
     def __init__(
@@ -72,6 +78,7 @@ class CommandSwerveDrivetrain(Subsystem, TunerSwerveDrivetrain):
         :type modules:                      list[swerve.SwerveModuleConstants]
         """
         ...
+        self.configureAutoBuilder(self)
 
     @overload
     def __init__(
@@ -108,6 +115,7 @@ class CommandSwerveDrivetrain(Subsystem, TunerSwerveDrivetrain):
         :type modules:                      list[swerve.SwerveModuleConstants]
         """
         ...
+        self.configureAutoBuilder(self)
 
     @overload
     def __init__(
@@ -118,7 +126,9 @@ class CommandSwerveDrivetrain(Subsystem, TunerSwerveDrivetrain):
         arg2: None,
         arg3: None,
         /,
-    ) -> None: ...
+    ) -> None: 
+        ...
+        self.configureAutoBuilder(self)
 
     def __init__(
         self,
@@ -224,6 +234,8 @@ class CommandSwerveDrivetrain(Subsystem, TunerSwerveDrivetrain):
 
         if utils.is_simulation():
             self._start_sim_thread()
+
+        self.configureAutoBuilder(self)
 
     def apply_request(
         self, request: Callable[[], swerve.requests.SwerveRequest]
@@ -332,3 +344,36 @@ class CommandSwerveDrivetrain(Subsystem, TunerSwerveDrivetrain):
         :rtype: Pose2d | None
         """
         return TunerSwerveDrivetrain.sample_pose_at(self, utils.fpga_to_current_time(timestamp))
+    
+    def configureAutoBuilder(self):
+        # Do all subsystem initialization here
+        # ...
+
+        # Load the RobotConfig from the GUI settings. You should probably
+        # store this in your Constants file
+        config = RobotConfig.fromGUISettings()
+
+        # Configure the AutoBuilder last
+        AutoBuilder.configure(
+            self.get_state().pose, # Robot pose supplier
+            self.reset_pose, # Method to reset odometry (will be called if your auto has a starting pose)
+            self.get_state().speeds, # ChassisSpeeds supplier. MUST BE ROBOT RELATIVE
+            lambda speeds, feedforwards: self.set_control(
+                self.path_apply_robot_speeds(speeds)
+                .with_wheel_force_feedforwards_x(feedforwards.robotRelativeForcesXNewtons())
+                .with_wheel_force_feedforwards_y(feedforwards.robotRelativeForcesYNewtons())
+            ), # Method that will drive the robot given ROBOT RELATIVE ChassisSpeeds. Also outputs individual module feedforwards
+            PPHolonomicDriveController( # PPHolonomicController is the built in path following controller for holonomic drive trains
+                PIDConstants(5.0, 0.0, 0.0), # Translation PID constants
+                PIDConstants(5.0, 0.0, 0.0) # Rotation PID constants
+            ),
+            config, # The robot configuration
+            self.shouldFlipPath, # Supplier to control path flipping based on alliance color
+            self # Reference to this subsystem to set requirements
+        )
+
+    def shouldFlipPath():
+        # Boolean supplier that controls when the path will be mirrored for the red alliance
+        # This will flip the path being followed to the red side of the field.
+        # THE ORIGIN WILL REMAIN ON THE BLUE SIDE
+        return DriverStation.getAlliance() == DriverStation.Alliance.kRed
