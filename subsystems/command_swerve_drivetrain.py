@@ -29,8 +29,6 @@ class CommandSwerveDrivetrain(Subsystem, TunerSwerveDrivetrain):
     _RED_ALLIANCE_PERSPECTIVE_ROTATION = Rotation2d.fromDegrees(180)
     """Red alliance sees forward as 180 degrees (toward blue alliance wall)"""
 
-    path_apply_robot_speeds = swerve.requests.ApplyRobotSpeeds()
-
     @overload
     def __init__(
         self,
@@ -51,7 +49,6 @@ class CommandSwerveDrivetrain(Subsystem, TunerSwerveDrivetrain):
         :type modules:               list[swerve.SwerveModuleConstants]
         """
         ...
-        self.configureAutoBuilder()
 
     @overload
     def __init__(
@@ -78,7 +75,6 @@ class CommandSwerveDrivetrain(Subsystem, TunerSwerveDrivetrain):
         :type modules:                      list[swerve.SwerveModuleConstants]
         """
         ...
-        self.configureAutoBuilder()
 
     @overload
     def __init__(
@@ -115,7 +111,6 @@ class CommandSwerveDrivetrain(Subsystem, TunerSwerveDrivetrain):
         :type modules:                      list[swerve.SwerveModuleConstants]
         """
         ...
-        self.configureAutoBuilder()
 
     @overload
     def __init__(
@@ -128,7 +123,6 @@ class CommandSwerveDrivetrain(Subsystem, TunerSwerveDrivetrain):
         /,
     ) -> None: 
         ...
-        self.configureAutoBuilder()
 
     def __init__(
         self,
@@ -148,6 +142,9 @@ class CommandSwerveDrivetrain(Subsystem, TunerSwerveDrivetrain):
 
         self._has_applied_operator_perspective = False
         """Keep track if we've ever applied the operator perspective before or not"""
+
+
+        self._path_apply_robot_speeds = swerve.requests.ApplyRobotSpeeds()
 
         # Swerve requests to apply during SysId characterization
         self._translation_characterization = swerve.requests.SysIdSwerveTranslation()
@@ -235,7 +232,7 @@ class CommandSwerveDrivetrain(Subsystem, TunerSwerveDrivetrain):
         if utils.is_simulation():
             self._start_sim_thread()
 
-        self.configureAutoBuilder()
+        self.configure_auto_builder()
 
     def apply_request(
         self, request: Callable[[], swerve.requests.SwerveRequest]
@@ -345,7 +342,7 @@ class CommandSwerveDrivetrain(Subsystem, TunerSwerveDrivetrain):
         """
         return TunerSwerveDrivetrain.sample_pose_at(self, utils.fpga_to_current_time(timestamp))
     
-    def configureAutoBuilder(self):
+    def configure_auto_builder(self):
         # Do all subsystem initialization here
         # ...
 
@@ -359,15 +356,15 @@ class CommandSwerveDrivetrain(Subsystem, TunerSwerveDrivetrain):
             self.reset_pose, # Method to reset odometry (will be called if your auto has a starting pose)
             lambda: self.get_state().speeds, # ChassisSpeeds supplier. MUST BE ROBOT RELATIVE
             lambda speeds, feedforwards: self.set_control(
-                self.path_apply_robot_speeds.with_speeds(speeds)
-                .with_wheel_force_feedforwards_x(lambda: feedforwards.robotRelativeForcesXNewtons())
-                .with_wheel_force_feedforwards_y(lambda: feedforwards.robotRelativeForcesYNewtons())
+                self._path_apply_robot_speeds.with_speeds(speeds)
+                .with_wheel_force_feedforwards_x(feedforwards.robotRelativeForcesXNewtons)
+                .with_wheel_force_feedforwards_y(feedforwards.robotRelativeForcesYNewtons)
             ), # Method that will drive the robot given ROBOT RELATIVE ChassisSpeeds. Also outputs individual module feedforwards
             PPHolonomicDriveController( # PPHolonomicController is the built in path following controller for holonomic drive trains
                 PIDConstants(5.0, 0.0, 0.0), # Translation PID constants
                 PIDConstants(5.0, 0.0, 0.0) # Rotation PID constants
             ),
             config, # The robot configuration
-            lambda: DriverStation.getAlliance() == DriverStation.Alliance.kRed, # Supplier to control path flipping based on alliance color
+            lambda: (DriverStation.getAlliance() or DriverStation.Alliance.kBlue) == DriverStation.Alliance.kRed, # Supplier to control path flipping based on alliance color
             self # Reference to this subsystem to set requirements
         )
