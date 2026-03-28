@@ -14,12 +14,17 @@ from generated.tuner_constants import TunerConstants
 from telemetry import Telemetry
 
 from phoenix6 import swerve
-from wpilib import DriverStation
+from wpilib import DriverStation, SendableChooser, SmartDashboard
 from wpimath.geometry import Rotation2d
 from wpimath.units import rotationsToRadians
 
 from subsystems.fuel_subsystem import FuelSubsystem
 from subsystems.elevator_subsystem import ElevatorSubsystem
+
+from pathplannerlib.auto import NamedCommands, AutoBuilder
+from pathplannerlib.controller import PPLTVController
+from pathplannerlib.config import RobotConfig
+
 
 
 class RobotContainer:
@@ -63,8 +68,15 @@ class RobotContainer:
 
         self.drivetrain = TunerConstants.create_drivetrain()
 
+        NamedCommands.registerCommand('spinUp', self._ball_subsystem.spinUpCommand().withTimeout(1.0))
+        NamedCommands.registerCommand('launch', self._ball_subsystem.launchCommand())
+
+        self._autoChooser = AutoBuilder.buildAutoChooser('Drive shoot')
+
         # Configure the button bindings
         self.configureButtonBindings()
+
+        SmartDashboard.putData('Auto Mode:', self._autoChooser)
 
     def configureButtonBindings(self) -> None:
         """
@@ -162,28 +174,4 @@ class RobotContainer:
         )
 
     def getAutonomousCommand(self) -> commands2.Command:
-        """
-        Use this to pass the autonomous command to the main {@link Robot} class.
-
-        :returns: the command to run in autonomous
-        """
-        # Simple drive forward auton
-        idle = swerve.requests.Idle()
-        return cmd.sequence(
-            # Reset our field centric heading to match the robot
-            # facing away from our alliance station wall (0 deg).
-            self.drivetrain.runOnce(
-                lambda: self.drivetrain.seed_field_centric(Rotation2d.fromDegrees(0))
-            ),
-            # Then slowly drive forward (away from us) for 5 seconds.
-            self.drivetrain.apply_request(
-                lambda: (
-                    self._drive.with_velocity_x(0.5)
-                    .with_velocity_y(0)
-                    .with_rotational_rate(0)
-                )
-            )
-            .withTimeout(5.0),
-            # Finally idle for the rest of auton
-            self.drivetrain.apply_request(lambda: idle)
-        )
+        return self._autoChooser.getSelected()

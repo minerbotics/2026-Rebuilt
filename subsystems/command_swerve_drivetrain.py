@@ -6,6 +6,9 @@ from typing import Callable, overload
 from wpilib import DriverStation, Notifier, RobotController
 from wpilib.sysid import SysIdRoutineLog
 from wpimath.geometry import Pose2d, Rotation2d
+from pathplannerlib.auto import AutoBuilder
+from pathplannerlib.controller import PPHolonomicDriveController
+from pathplannerlib.config import RobotConfig, PIDConstants
 
 from generated.tuner_constants import TunerSwerveDrivetrain
 
@@ -118,7 +121,8 @@ class CommandSwerveDrivetrain(Subsystem, TunerSwerveDrivetrain):
         arg2: None,
         arg3: None,
         /,
-    ) -> None: ...
+    ) -> None: 
+        ...
 
     def __init__(
         self,
@@ -138,6 +142,9 @@ class CommandSwerveDrivetrain(Subsystem, TunerSwerveDrivetrain):
 
         self._has_applied_operator_perspective = False
         """Keep track if we've ever applied the operator perspective before or not"""
+
+
+        self._path_apply_robot_speeds = swerve.requests.ApplyRobotSpeeds()
 
         # Swerve requests to apply during SysId characterization
         self._translation_characterization = swerve.requests.SysIdSwerveTranslation()
@@ -224,6 +231,8 @@ class CommandSwerveDrivetrain(Subsystem, TunerSwerveDrivetrain):
 
         if utils.is_simulation():
             self._start_sim_thread()
+
+        self.configure_auto_builder()
 
     def apply_request(
         self, request: Callable[[], swerve.requests.SwerveRequest]
@@ -332,3 +341,30 @@ class CommandSwerveDrivetrain(Subsystem, TunerSwerveDrivetrain):
         :rtype: Pose2d | None
         """
         return TunerSwerveDrivetrain.sample_pose_at(self, utils.fpga_to_current_time(timestamp))
+    
+    def configure_auto_builder(self):
+        # Do all subsystem initialization here
+        # ...
+
+        # Load the RobotConfig from the GUI settings. You should probably
+        # store this in your Constants file
+        config = RobotConfig.fromGUISettings()
+
+        # Configure the AutoBuilder last
+        AutoBuilder.configure(
+            lambda: self.get_state().pose, # Robot pose supplier
+            self.reset_pose, # Method to reset odometry (will be called if your auto has a starting pose)
+            lambda: self.get_state().speeds, # ChassisSpeeds supplier. MUST BE ROBOT RELATIVE
+            lambda speeds, feedforwards: self.set_control(
+                self._path_apply_robot_speeds.with_speeds(speeds)
+                .with_wheel_force_feedforwards_x(feedforwards.robotRelativeForcesXNewtons)
+                .with_wheel_force_feedforwards_y(feedforwards.robotRelativeForcesYNewtons)
+            ), # Method that will drive the robot given ROBOT RELATIVE ChassisSpeeds. Also outputs individual module feedforwards
+            PPHolonomicDriveController( # PPHolonomicController is the built in path following controller for holonomic drive trains
+                PIDConstants(5.0, 0.0, 0.0), # Translation PID constants
+                PIDConstants(5.0, 0.0, 0.0) # Rotation PID constants
+            ),
+            config, # The robot configuration
+            lambda: (DriverStation.getAlliance() or DriverStation.Alliance.kBlue) == DriverStation.Alliance.kRed, # Supplier to control path flipping based on alliance color
+            self # Reference to this subsystem to set requirements
+        )

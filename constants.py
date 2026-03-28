@@ -17,4 +17,4 @@ class OperatorConstants:
 
 class ElevatorConstants:
     _elevator_id = 12
-    _elevator_speed = 0.1
+    _elevator_speed = 0.6
