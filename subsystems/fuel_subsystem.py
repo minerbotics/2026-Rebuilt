@@ -21,13 +21,13 @@ class FuelSubsystem(commands2.Subsystem):
         self.leftLauncher = rev.SparkFlex(FuelConstants._left_launcher_id, rev.SparkFlex.MotorType.kBrushless)
         self.rightLauncher = rev.SparkFlex(FuelConstants._right_launcher_id, rev.SparkFlex.MotorType.kBrushless)
         
-        follower_config = rev.SparkBaseConfig()
-        follower_config.follow(self.leftLauncher, True)
-        self.rightLauncher.configure(
-            follower_config, 
-            rev.SparkBase.ResetMode.kResetSafeParameters,
-            rev.SparkBase.PersistMode.kPersistParameters
-        )
+        #follower_config = rev.SparkBaseConfig()
+        #follower_config.follow(self.leftLauncher, True)
+        #self.rightLauncher.configure(
+        #    follower_config,
+        #    rev.ResetMode.kResetSafeParameters,
+        #    rev.PersistMode.kPersistParameters
+        #    )
 
 
     def intake(self) -> None:
@@ -41,17 +41,20 @@ class FuelSubsystem(commands2.Subsystem):
     def launch(self) -> None:
         self.feederRoller.set(FuelConstants._feeder_launch_speed)
         self.intakeRoller.set(-1 * FuelConstants._intake_launch_speed)
-        self.leftLauncher.set(FuelConstants._launcher_launch_speed)
+        self.leftLauncher.set(-1 * FuelConstants._launcher_launch_speed)
+        self.rightLauncher.set(1 * FuelConstants._launcher_launch_speed)
 
     def spinUp(self) -> None:
         self.feederRoller.set(FuelConstants._feeder_spinup_speed)
         self.intakeRoller.set(-1 * FuelConstants._intake_launch_speed)
-        self.leftLauncher.set(FuelConstants._launcher_launch_speed)
+        self.leftLauncher.set(-1 * FuelConstants._launcher_launch_speed)
+        self.rightLauncher.set(1 * FuelConstants._launcher_launch_speed)
 
     def stop(self) -> None:
         self.feederRoller.set(0)
         self.intakeRoller.set(0)
         self.leftLauncher.set(0)
+        self.rightLauncher.set(0)
     
     def spinUpCommand(self) -> commands2.Command:
         return self.run(self.spinUp)
