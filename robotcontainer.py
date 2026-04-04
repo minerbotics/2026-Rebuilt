@@ -92,7 +92,7 @@ class RobotContainer:
         )
 
         self._operator.rightBumper().whileTrue(
-            self._ball_subsystem.runEnd(self._ball_subsystem.launchCommand, self._ball_subsystem.stop)
+            self._ball_subsystem.runEnd(self._ball_subsystem.launch, self._ball_subsystem.stop)
         )
 
         self._operator.b().whileTrue(

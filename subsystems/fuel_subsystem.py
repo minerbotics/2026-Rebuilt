@@ -16,9 +16,9 @@ class FuelSubsystem(commands2.Subsystem):
         self._feeder_roller = phoenix6.hardware.TalonFXS(FuelConstants._feeder_id)
         motor_arrangement = phoenix6.signals.MotorArrangementValue.NEO_JST
         arrangement_config = phoenix6.configs.CommutationConfigs().with_motor_arrangement(motor_arrangement)
-        launcher_configurator = self._intake_roller.configurator
+        intake_configurator = self._intake_roller.configurator
         feeder_configurator = self._feeder_roller.configurator
-        launcher_configurator.apply(arrangement_config)
+        intake_configurator.apply(arrangement_config)
         feeder_configurator.apply(arrangement_config)
 
         # Launch motors (NEO Vortex / SparkFlex)
@@ -43,7 +43,7 @@ class FuelSubsystem(commands2.Subsystem):
         left_launch_config.smartCurrentLimit(40, freeLimit=6700)
         left_launch_config.closedLoop.setFeedbackSensor(rev.FeedbackSensor.kPrimaryEncoder).pid(
             self._kP, self._kI, self._kD
-        )
+        ).velocityFF(self._ff).outputRange(-1, 1)
         self._left_launcher.configure(
             left_launch_config,
             rev.ResetMode.kResetSafeParameters,
@@ -100,10 +100,10 @@ class FuelSubsystem(commands2.Subsystem):
             except Exception:
                 # fall through to other methods
                 pass
-
-        # Fallback open-loop guess
-        open_guess = getattr(FuelConstants, "_launcher_launch_speed", 0.8)
-        self._left_launcher.set(-open_guess)
+        else:
+            # Fallback open-loop guess
+            open_guess = getattr(FuelConstants, "_launcher_launch_speed", 0.8)
+            self._left_launcher.set(-open_guess)
 
     def stopLauncher(self) -> None:
         self._target_rpm = 0.0
@@ -166,8 +166,10 @@ class FuelSubsystem(commands2.Subsystem):
     def periodic(self) -> None:
         """
         Light monitor. Closed-loop runs on controller hardware at high rate; here we optionally re-issue
-        setReference if both sides drop very low (conservative fallback).
+        setSetpoint if both sides drop very low (conservative fallback).
         """
+        
+        wpilib.SmartDashboard.putNumber('Left Velocity:', self._left_encoder.getVelocity())
         try:
             left_v = float(self._left_encoder.getVelocity())
             right_v = float(self._right_encoder.getVelocity())
@@ -180,7 +182,5 @@ class FuelSubsystem(commands2.Subsystem):
                 # Try controller objects first
                 if self._left_controller and hasattr(self._left_controller, "setSetpoint"):
                     self._left_controller.setSetpoint(-self._target_rpm, rev.SparkFlex.ControlType.kVelocity)
-                if self._right_controller and hasattr(self._right_controller, "setSetpoint"):
-                    self._right_controller.setSetpoint(self._target_rpm, rev.SparkFlex.ControlType.kVelocity)
             except Exception:
                 pass
