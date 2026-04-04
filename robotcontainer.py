@@ -92,10 +92,7 @@ class RobotContainer:
         )
 
         self._operator.rightBumper().whileTrue(
-            self._ball_subsystem.spinUpCommand()
-            .withTimeout(1.0)
-            .andThen(self._ball_subsystem.launchCommand())
-            .finallyDo(lambda _: self._ball_subsystem.stop())
+            self._ball_subsystem.runEnd(self._ball_subsystem.launchCommand, self._ball_subsystem.stop)
         )
 
         self._operator.b().whileTrue(
