@@ -12,7 +12,7 @@ class FuelConstants:
     _launcher_launch_speed = 1.0
     _feeder_spinup_speed = 0
 
-    _launcher_target_rpm = 4200 # example; set to tuned RPM
+    _launcher_target_rpm = 4600 # example; set to tuned RPM
     _launcher_kP = 0.00035
     _launcher_kI = 0.0
     _launcher_kD = 0.0
