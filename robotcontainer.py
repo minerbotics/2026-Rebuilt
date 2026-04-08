@@ -68,8 +68,8 @@ class RobotContainer:
 
         self.drivetrain = TunerConstants.create_drivetrain()
 
-        NamedCommands.registerCommand('spinUp', self._ball_subsystem.spinUpCommand().withTimeout(1.0))
-        NamedCommands.registerCommand('launch', self._ball_subsystem.launchCommand())
+        NamedCommands.registerCommand('launch', self._ball_subsystem.runEnd(self._ball_subsystem.launch, self._ball_subsystem.stop).withTimeout(5.0))
+        NamedCommands.registerCommand('intake', self._ball_subsystem.runEnd(self._ball_subsystem.intake, self._ball_subsystem.stop).withTimeout(2.0))
 
         self._autoChooser = AutoBuilder.buildAutoChooser('Drive shoot')
 
